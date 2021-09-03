@@ -19,7 +19,7 @@ from django.contrib.auth.views import (
 class AccountsSignupView(CreateView):
 	template_name = "registration/signup.html"
 	form_class = AccountsSignupForm
-	success_url = reverse_lazy(settings.LOGIN_REDIRECT_URL)
+	success_url = settings.LOGIN_REDIRECT_URL
 	
 	def get(self, request, *args, **kwargs):
 		'''	
