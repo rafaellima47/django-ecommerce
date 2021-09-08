@@ -16,6 +16,7 @@ class Product(Base):
 	title = models.CharField(max_length=200)
 	description = models.TextField()
 	price = models.FloatField()
+	is_digital = models.BooleanField(default=False)
 	#images = None
 
 	def __str__(self):
