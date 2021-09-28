@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Search</h1>
+
+{% for product in object_list %}
+	<p><a href="{% url 'product_detail' product.id %}">{{product}}</p></a>
+{% endfor %}
+
+{% endblock %}

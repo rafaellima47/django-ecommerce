@@ -4,6 +4,6 @@
 	<h1>Home</h1>
 
 	{% for product in object_list %}
-		<p>{{product}}</p>
+		<a href="{% url 'product_detail' product.id %}">{{product}}</a><br>
 	{% endfor %}
 {% endblock %}

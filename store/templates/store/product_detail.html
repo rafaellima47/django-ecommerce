@@ -3,5 +3,16 @@
 {% block content %}
 	<h1>Product</h1>
 
-	{{object.title}}
+	<p>{{object.title}}</p>
+	<p>{{object.description}}</p>
+	<p>{{object.price}}</p>
+
+	<a href="">Add to cart</a>
+
+	{% for review in object.review_set.all %}
+	<br><br>
+		<p>{{review.customer}}</p>
+		<p>{{review.rate}}</p>
+		<p>{{review.review}}</p>
+	{% endfor %}
 {% endblock %}

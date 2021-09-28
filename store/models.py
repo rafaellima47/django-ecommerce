@@ -62,6 +62,7 @@ class OrderItem(Base):
 
 class ShippingInformation(Base):
 	customer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+	title = models.CharField(max_length=200)
 	order = models.ForeignKey(Order, on_delete=models.CASCADE)
 	address = models.CharField(max_length=300)
 	city =  models.CharField(max_length=300)
@@ -77,10 +78,11 @@ class Review(Base):
 	customer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 	product = models.ForeignKey(Product, on_delete=models.CASCADE)
 	rate = models.PositiveIntegerField(validators=[MaxValueValidator(5)])
-	Review = models.TextField()
+	review = models.TextField()
 
 	def __str__(self):
 		return str(self.id)
 
 	class Meta:
 		unique_together = ["customer", "product"]
+

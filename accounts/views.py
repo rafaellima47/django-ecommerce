@@ -17,7 +17,7 @@ from django.contrib.auth.views import (
 
 
 class AccountsSignupView(CreateView):
-	template_name = "registration/signup.html"
+	template_name = "accounts/signup.html"
 	form_class = AccountsSignupForm
 	success_url = settings.LOGIN_REDIRECT_URL
 	
@@ -42,6 +42,7 @@ class AccountsSignupView(CreateView):
 
 
 class AccountsLoginView(LoginView):
+	template_name = "accounts/login.html"
 	form_class = AccountsLoginForm
 	redirect_authenticated_user = True
 
