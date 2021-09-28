@@ -4,6 +4,40 @@
 
 <h1>Search</h1>
 
+<form method="GET" action="">
+	<input type="text" name="s" value="{{request.GET.s}}">
+
+	<!-- Filter -->
+	<div class="dropdown">
+		<button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+	    Filter Categories
+	  	</button>
+	 
+	  	<ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenuButton1">
+	  		{% for category in categories_list %}
+	  		<li>
+				<div class="form-check">
+					<input name="category" class="form-check-input" type="checkbox" value="{{category}}" id="flexCheckDefault">
+					<label class="form-check-label" for="flexCheckDefault">{{category}}</label>
+				</div>
+			</li>
+			{% endfor %}
+		</ul>
+	</div>
+
+	<!-- Ordering -->
+	<select name="order" class="form-select btn-sm btn-outline-dark">
+		<option value="Default" selected>Sort</option>
+	  	<option value="1">Highest Rated</option>
+	  	<option value="2">Price: Low to High</option>
+	  	<option value="3">Price: High to Low</option>
+	  	<option value="4">Newest Arrival</option>
+	</select>
+
+	<input type="submit" value="Apply">
+</form>
+
+
 {% for product in object_list %}
 	<p><a href="{% url 'product_detail' product.id %}">{{product}}</p></a>
 {% endfor %}

@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, TemplateView, FormView, View
 
-from .models import Product
+from .models import Product, Category
 
 
 class HomeView(ListView):
@@ -35,12 +35,46 @@ class AccountPageView(LoginRequiredMixin ,TemplateView):
 class SearchView(ListView):
 	template_name = "store/search.html"
 	model = Product
+	paginate_by = 10
+
+	def get_ordering(self, queryset, ordering):
+		"""
+		Return an ordered queryset according
+		to the ordering option chosen
+		"""
+		if ordering == "1":
+			pass # Highest Rate
+		elif ordering == "2":
+			return queryset.order_by("price")
+		elif ordering == "3":
+			return queryset.order_by("-price")
+		elif ordering == "4":
+			return queryset.order_by("-created")
+		return queryset
 
 	def get_queryset(self):
+		"""
+		Return the filtered queryset
+		"""
 		s = self.request.GET.get("s")
-		print(s)
+		categories = self.request.GET.getlist("category")
+		ordering = self.request.GET.get("order")
+
 		if s:
 			object_list = self.model.objects.filter(title__icontains=s)
 		else:
 			object_list = self.model.objects.all()
+
+		if categories:
+			for category in categories:
+				object_list = object_list.filter(category__title=category)
+
+		if ordering:
+			object_list = self.get_ordering(object_list, ordering)
+
 		return object_list
+
+	def get_context_data(self, **kwargs):
+		context = super(SearchView, self).get_context_data(**kwargs)
+		context["categories_list"] = Category.objects.all()
+		return context
