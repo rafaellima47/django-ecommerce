@@ -7,7 +7,8 @@
 	<p>{{object.description}}</p>
 	<p>{{object.price}}</p>
 
-	<a href="">Add to cart</a>
+	<a href="">Add to cart</a><br>
+	<a href="{% url 'update_wishlist' object.id %}">Add to Wishlist</a>
 
 	{% for review in object.review_set.all %}
 	<br><br>

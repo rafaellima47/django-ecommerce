@@ -1,7 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, TemplateView, FormView, View
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 
-from .models import Product, Category
+from .models import Product, Category, WishlistItem
 
 
 class HomeView(ListView):
@@ -78,3 +81,19 @@ class SearchView(ListView):
 		context = super(SearchView, self).get_context_data(**kwargs)
 		context["categories_list"] = Category.objects.all()
 		return context
+
+
+
+@login_required
+def update_wishlist(request, pk):
+	customer = request.user
+	product = get_object_or_404(Product, pk=pk)
+
+	try:
+		item = WishlistItem.objects.get(customer=customer, product=product)
+		item.delete()
+	except WishlistItem.DoesNotExist:
+		item = WishlistItem(customer=customer, product=product)
+		item.save()
+
+	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

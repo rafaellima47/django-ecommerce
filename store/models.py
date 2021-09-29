@@ -86,3 +86,8 @@ class Review(Base):
 	class Meta:
 		unique_together = ["customer", "product"]
 
+
+
+class WishlistItem(Base):
+	customer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+	product = models.ForeignKey(Product, on_delete=models.CASCADE)
