@@ -25,7 +25,7 @@ class CartView(ListView):
 	template_name = "store/cart.html"
 
 	def get_queryset(self):
-		object_list = Cart(self.request)
+		object_list = list(Cart(self.request))
 		return object_list
 
 
@@ -107,13 +107,15 @@ def update_wishlist(request, pk):
 
 
 @require_POST
-def update_cart(request, pk, quantity=1, method=None):
+def cart_add(request, pk, quantity=1):
 	cart = Cart(request)
-
-	if method == "add":
-		cart.add(pk, quantity)
-	elif method == "delete":
-		cart.delete(pk)
-
+	cart.add(pk, quantity)
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
+
+
+@require_POST
+def cart_delete(request, pk):
+	cart = Cart(request)
+	cart.delete(pk)
+	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

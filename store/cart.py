@@ -5,15 +5,14 @@ class Cart(object):
 
 	def __init__(self, request):
 		if not request.session.get("cart"):
+			print("created cart")
 			request.session["cart"] = {}
 
 		self.session = request.session
 		self.cart = request.session["cart"]
 
 	def __iter__(self):
-		print("iter")
 		for product_id in self.cart:
-			print("ala")
 			yield Product.objects.get(pk=product_id)
 
 	def add(self, product_id, quantity):

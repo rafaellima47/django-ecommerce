@@ -7,7 +7,7 @@
 	<p>{{object.description}}</p>
 	<p>{{object.price}}</p>
 
-	<form action="{% url 'update_cart' object.id %}" method="POST">
+	<form action="{% url 'cart_add' object.id%}" method="POST">
 		{% csrf_token %}
 		<input type="submit" value="Add to cart" class="btn btn-outline-dark">
 	</form>
