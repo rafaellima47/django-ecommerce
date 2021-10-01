@@ -4,10 +4,17 @@
 	<h1>Cart</h1>
 
 	{% for product in object_list %}
-	<p>{{product}}</p>
-	<form action="{% url 'cart_delete' product.id %}" method="POST">
+	<form action="{% url 'cart_delete' product.product.id %}" method="POST">
 		{%csrf_token%}
-		<input type="submit" value="x" class="btn btn-outline-warning">
+		<input type="submit" value="x" class="btn btn-outline-danger">
+		{{product.product}} - R$ {{product.product.price}}
 	</form>
+	<form action="{% url 'cart_add' product.product.id %}" method="POST">
+		{% csrf_token %}
+		<input type="number" name="quantity" value="{{product.quantity}}">
+		<input type="submit" value="save" class="btn-sm btn-outline-dark">
+	</form>
+	<hr>
 	{% endfor %}
+	<p>Total: R$ {{cart.get_total}}</p>
 {% endblock %}

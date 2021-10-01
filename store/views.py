@@ -28,6 +28,10 @@ class CartView(ListView):
 		object_list = list(Cart(self.request))
 		return object_list
 
+	def get_context_data(self, **kwargs):
+		context = super(CartView, self).get_context_data(**kwargs)
+		context["cart"] = Cart(self.request)
+		return context
 
 
 class CheckoutView(FormView):
@@ -107,9 +111,16 @@ def update_wishlist(request, pk):
 
 
 @require_POST
-def cart_add(request, pk, quantity=1):
+def cart_add(request, pk):
+	quantity = 1
+	override_quantity = False
+
+	if request.POST.get("quantity"):
+		quantity = int(request.POST["quantity"])
+		override_quantity = True
+
 	cart = Cart(request)
-	cart.add(pk, quantity)
+	cart.add(pk, quantity, override_quantity)
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
