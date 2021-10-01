@@ -7,7 +7,10 @@
 	<p>{{object.description}}</p>
 	<p>{{object.price}}</p>
 
-	<a href="">Add to cart</a><br>
+	<form action="{% url 'update_cart' object.id %}" method="POST">
+		{% csrf_token %}
+		<input type="submit" value="Add to cart" class="btn btn-outline-dark">
+	</form>
 	<a href="{% url 'update_wishlist' object.id %}">Add to Wishlist</a>
 
 	{% for review in object.review_set.all %}

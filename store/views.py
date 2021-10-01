@@ -3,8 +3,10 @@ from django.views.generic import ListView, DetailView, TemplateView, FormView, V
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from .models import Product, Category, WishlistItem
+from .cart import Cart
 
 
 class HomeView(ListView):
@@ -19,8 +21,12 @@ class ProductDetailView(DetailView):
 
 
 
-class CartView(TemplateView):
+class CartView(ListView):
 	template_name = "store/cart.html"
+
+	def get_queryset(self):
+		object_list = Cart(self.request)
+		return object_list
 
 
 
@@ -97,3 +103,17 @@ def update_wishlist(request, pk):
 		item.save()
 
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+
+@require_POST
+def update_cart(request, pk, quantity=1, method=None):
+	cart = Cart(request)
+
+	if method == "add":
+		cart.add(pk, quantity)
+	elif method == "delete":
+		cart.delete(pk)
+
+	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
