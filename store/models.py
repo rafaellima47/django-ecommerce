@@ -41,8 +41,22 @@ class ProductImage(Base):
 
 
 
+class ShippingInformation(Base):
+	customer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+	title = models.CharField(max_length=200)
+	address = models.CharField(max_length=300)
+	city =  models.CharField(max_length=300)
+	state =  models.CharField(max_length=300)
+	zipcode = models.CharField(max_length=300)
+
+	def __str__(self):
+		return self.address
+
+
+
 class Order(Base):
 	customer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+	shipping_info = models.ForeignKey(ShippingInformation, on_delete=models.CASCADE)
 	complete = models.BooleanField(default=False)
 
 	def __str__(self):
@@ -57,20 +71,6 @@ class OrderItem(Base):
 
 	def __str__(self):
 		return self.product
-
-
-
-class ShippingInformation(Base):
-	customer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-	title = models.CharField(max_length=200)
-	order = models.ForeignKey(Order, on_delete=models.CASCADE)
-	address = models.CharField(max_length=300)
-	city =  models.CharField(max_length=300)
-	state =  models.CharField(max_length=300)
-	zipcode = models.CharField(max_length=300)
-
-	def __str__(self):
-		return self.address
 
 
 

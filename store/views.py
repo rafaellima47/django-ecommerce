@@ -7,6 +7,7 @@ from django.views.decorators.http import require_POST
 
 from .models import Product, Category, WishlistItem
 from .cart import Cart
+from .forms import ShippingInformationForm, CheckoutForm
 
 
 class HomeView(ListView):
@@ -34,9 +35,27 @@ class CartView(ListView):
 		return context
 
 
-class CheckoutView(FormView):
+class CheckoutView(LoginRequiredMixin, FormView):
 	template_name = "store/checkout.html"
-	form_class = None
+	form_class = CheckoutForm
+
+	def get_form_kwargs(self):
+		kwargs = super(CheckoutView, self).get_form_kwargs()
+		kwargs.update({'user': self.request.user})
+		return kwargs
+
+
+
+class ShippingInformationView(LoginRequiredMixin, FormView):
+	template_name = "store/shipping_info.html"
+	form_class = ShippingInformationForm
+
+	def form_valid(self, form):
+		shipping_info = form.save(commit=False)
+		shipping_info.customer = self.request.user 
+		shipping_info.save()
+		return HttpResponseRedirect(self.request.META.get('HTTP_REFERER', '/'))
+
 
 
 

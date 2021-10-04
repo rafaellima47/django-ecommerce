@@ -17,4 +17,6 @@
 	<hr>
 	{% endfor %}
 	<p>Total: R$ {{cart.get_total}}</p>
+
+	<a href="{% url 'checkout' %}" class="btn btn-lg btn-outline-dark">Checkout</a>
 {% endblock %}

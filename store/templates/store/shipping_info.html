@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h1>Checkout</h1>
+	<h1>Shipping Information</h1>
 
-	<a class="btn btn-outline-dark" href="{% url 'shipping_info' %}">Add new address</a>
-
-	<form>
+	<form action="{% url 'shipping_info' %}" method="POST">
 		{% csrf_token %}
 		{{form}}
 		<input type="submit" name="">
