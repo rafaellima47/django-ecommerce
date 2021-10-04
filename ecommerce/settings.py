@@ -14,6 +14,7 @@ from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 from django.conf import settings
 import os
+import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -164,8 +165,8 @@ EMAIL_USE_TLS = True
 
 
 LOGIN_URL = "login"
-LOGOUT_URL = "logout"
-LOGIN_REDIRECT_URL = ""
+LOGOUT_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "home"
 
 
 
@@ -193,7 +194,10 @@ PASSWORD_HASHERS = [
 # Python Social Auth backends configuration
 # Read the python social auth documentation for all the instructions
 # Access 'https://python-social-auth.readthedocs.io/en/latest/backends/index.html' for all available backends
-SOCIAL_AUTHENTICATION_BACKENDS = []
+SOCIAL_AUTHENTICATION_BACKENDS = ['social_core.backends.google.GoogleOAuth2',]
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET
 
 
 # Adds SOCIAL_AUTHENTICATION_BACKENDS to global authentication backends variable
@@ -219,6 +223,6 @@ MIDDLEWARE += ["social_django.middleware.SocialAuthExceptionMiddleware",]
 # Django Recaptcha Settings -------------------------------------------
 
 # ReCaptcha keys
-RECAPTCHA_PRIVATE_KEY = ""
-RECAPTCHA_PUBLIC_KEY = ""
+RECAPTCHA_PRIVATE_KEY = config.RECAPTCHA_PRIVATE_KEY
+RECAPTCHA_PUBLIC_KEY = config.RECAPTCHA_PUBLIC_KEY
 

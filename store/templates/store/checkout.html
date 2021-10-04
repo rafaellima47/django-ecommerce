@@ -5,7 +5,7 @@
 
 	<a class="btn btn-outline-dark" href="{% url 'shipping_info' %}">Add new address</a>
 
-	<form>
+	<form action="" method="POST">
 		{% csrf_token %}
 		{{form}}
 		<input type="submit" name="">

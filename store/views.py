@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.urls import reverse
 
 from .models import Product, Category, WishlistItem
 from .cart import Cart
@@ -35,6 +36,7 @@ class CartView(ListView):
 		return context
 
 
+
 class CheckoutView(LoginRequiredMixin, FormView):
 	template_name = "store/checkout.html"
 	form_class = CheckoutForm
@@ -54,8 +56,7 @@ class ShippingInformationView(LoginRequiredMixin, FormView):
 		shipping_info = form.save(commit=False)
 		shipping_info.customer = self.request.user 
 		shipping_info.save()
-		return HttpResponseRedirect(self.request.META.get('HTTP_REFERER', '/'))
-
+		return HttpResponseRedirect(reverse("checkout"))
 
 
 
