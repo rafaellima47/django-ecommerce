@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h1>Activate Account</h1>
+
+	{{email}}
+
+	<form action="{% url 'activation' email=email%}" method="POST">
+		{% csrf_token %}
+		<input type="submit" class="btn btn-outline-dark" value="Send Email">
+	</form>
+{% endblock %}
