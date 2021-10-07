@@ -1,5 +1,5 @@
 from django.views.generic import CreateView, TemplateView
-from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.contrib.auth import login, authenticate
 from .forms import AccountsSignupForm, AccountsLoginForm
@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode  
 from django.utils.encoding import force_bytes, force_text  
+from django.contrib.auth import get_user_model
 from django.contrib.auth.views import (
 	LoginView,
 	LogoutView,
@@ -19,6 +20,8 @@ from django.contrib.auth.views import (
 	PasswordResetDoneView,
 	PasswordResetCompleteView,
 	)
+
+from .tokens import TokenGenerator
 
 
 class AccountsSignupView(CreateView):
@@ -34,12 +37,7 @@ class AccountsSignupView(CreateView):
 			"token": TokenGenerator().make_token(user),
 			})
 
-		email = EmailMessage(
-			"Account Activation",
-			template,
-			settings.EMAIL_HOST_USER,
-			[user.email]
-			)
+		email = EmailMessage("Account Activation",template,settings.EMAIL_HOST_USER,[user.email])
 		email.send()
 	
 
@@ -66,25 +64,19 @@ class AccountsSignupView(CreateView):
 
 
 
-
-class AccountActivationView(TemplateView):
-	template_name = "accounts/activation.html"
-
-	def get_context_data(self, **kwargs):
-		context = super(AccountActivationView, self).get_context_data(**kwargs)
-		context["email"] = kwargs.get("email")
-		return context
-
-	def post(self, request, *args, **kwargs):
-		template = render_to_string("accounts/activation_template.html")
-		email = EmailMessage(
-			"Account Activation",
-			template,
-			settings.EMAIL_HOST_USER,
-			["47rafael.lima@gmail.com"]
-			)
-		email.send()
-		return HttpResponseRedirect("")
+def activate(request, uidb64, token):
+	User = get_user_model()  
+	try:  
+		uid = force_text(urlsafe_base64_decode(uidb64))  
+		user = User.objects.get(pk=uid)  
+	except(TypeError, ValueError, OverflowError, User.DoesNotExist):  
+		user = None
+	if user is not None and TokenGenerator().check_token(user, token):  
+		user.is_active = True  
+		user.save()  
+		return HttpResponse('Thank you for your email confirmation. Now you can login your account.')  
+	else:  
+		return HttpResponse('Activation link is invalid!')  
 
 
 
