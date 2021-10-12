@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from .models import Product, Category, WishlistItem
 from .cart import Cart
@@ -40,6 +40,7 @@ class CartView(ListView):
 class CheckoutView(LoginRequiredMixin, FormView):
 	template_name = "store/checkout.html"
 	form_class = CheckoutForm
+	success_url = reverse_lazy("home")
 
 	def get_form_kwargs(self):
 		kwargs = super(CheckoutView, self).get_form_kwargs()

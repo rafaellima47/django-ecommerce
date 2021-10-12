@@ -1,8 +1,7 @@
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView
 from django.shortcuts import HttpResponseRedirect, HttpResponse
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth import login, authenticate
-from .forms import AccountsSignupForm, AccountsLoginForm
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -10,6 +9,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode  
 from django.utils.encoding import force_bytes, force_text  
 from django.contrib.auth import get_user_model
+from django.contrib import messages
 from django.contrib.auth.views import (
 	LoginView,
 	LogoutView,
@@ -21,13 +21,14 @@ from django.contrib.auth.views import (
 	PasswordResetCompleteView,
 	)
 
+from .forms import AccountsSignupForm, AccountsLoginForm
 from .tokens import TokenGenerator
 
 
 class AccountsSignupView(CreateView):
 	template_name = "accounts/signup.html"
 	form_class = AccountsSignupForm
-	success_url = settings.LOGIN_URL
+	success_url = reverse_lazy(settings.LOGIN_URL)
 
 	def send_activation_email(self, user):
 		current_site = get_current_site(self.request)  
@@ -36,11 +37,10 @@ class AccountsSignupView(CreateView):
 			"uid": urlsafe_base64_encode(force_bytes(user.pk)),  
 			"token": TokenGenerator().make_token(user),
 			})
-
 		email = EmailMessage("Account Activation",template,settings.EMAIL_HOST_USER,[user.email])
 		email.send()
+		
 	
-
 	def get(self, request, *args, **kwargs):
 		'''	
 		If user is authenticated redirect to LOGIN_REDIRECT_URL
@@ -59,7 +59,10 @@ class AccountsSignupView(CreateView):
 		user = authenticate(email=email, password=password)
 		user.is_active = False
 		user.save()
-		self.send_activation_email(user)
+		try:
+			self.send_activation_email(user)
+		except:
+			pass 
 		return valid
 
 
@@ -74,9 +77,10 @@ def activate(request, uidb64, token):
 	if user is not None and TokenGenerator().check_token(user, token):  
 		user.is_active = True  
 		user.save()  
-		return HttpResponse('Thank you for your email confirmation. Now you can login your account.')  
+		messages.success(request, "You can now login to your account")
 	else:  
-		return HttpResponse('Activation link is invalid!')  
+		messages.success(request, "Invalid")
+	return HttpResponseRedirect(reverse("login"))
 
 
 
