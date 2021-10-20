@@ -3,6 +3,10 @@
 {% block content %}
 	<h1>Product</h1>
 
+	{% for image in object.productimage_set.all %}
+	<img src="{{image.image.url}}">
+	{% endfor %}
+
 	<p>{{object.title}}</p>
 	<p>{{object.description}}</p>
 	<p>{{object.price}}</p>
