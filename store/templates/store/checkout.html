@@ -10,4 +10,9 @@
 		{{form}}
 		<input type="submit" name="">
 	</form>
+
+	<form action="{% url 'stripe_checkout' %}" method="POST">
+		{% csrf_token %}
+		<input type="submit" value="Continue">
+	</form>
 {% endblock %}

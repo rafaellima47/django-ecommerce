@@ -144,13 +144,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework.authentication.SessionAuthentication", ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthneticatedOrReadOnly",)
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",)
 }
 
 
 # Stripe Credentials
 STRIPE_PUBLIC_KEY = config.STRIPE_PUBLIC_KEY
-STRIPE_PRIVATE_KEY = config.STRIPE_PRIVATE_KEY
+STRIPE_SECRET_KEY = config.STRIPE_SECRET_KEY
 
 
 # Accounts Settings ---------------------------------------------------

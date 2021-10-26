@@ -1,10 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, TemplateView, FormView, View
+from django.views.generic import ListView, DetailView, TemplateView, FormView, View, RedirectView
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.urls import reverse, reverse_lazy
+from django.conf import settings
+
+import stripe
 
 from .models import Product, Category, WishlistItem
 from .cart import Cart
@@ -58,6 +61,34 @@ class ShippingInformationView(LoginRequiredMixin, FormView):
 		shipping_info.customer = self.request.user 
 		shipping_info.save()
 		return HttpResponseRedirect(reverse("checkout"))
+
+
+
+class StripeCheckoutView(LoginRequiredMixin, View):
+	
+	def post(self, request, *args, **kwargs):
+		stripe.api_key = settings.STRIPE_SECRET_KEY
+		cart = request.session.get("cart")
+		line_items = []
+
+		for item in cart:
+			product = Product.objects.get(pk=item)
+			line_items.append({
+					"name": product.title,
+					"quantity": cart[item]["quantity"],
+					"currency": "brl",
+					"amount": int(product.price*100),
+				})
+		
+		checkout_session = stripe.checkout.Session.create(
+			payment_method_types=["card"],
+			mode="payment",
+			line_items=line_items,
+			success_url=f"http://localhost:8000",
+			cancel_url=f"http://localhost:8000",
+			)
+		
+		return HttpResponseRedirect(checkout_session.url)
 
 
 
