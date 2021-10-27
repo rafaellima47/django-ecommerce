@@ -15,7 +15,6 @@ class ShippingInformationForm(forms.ModelForm):
 		exclude = ["customer"]
 
 
-
 class CheckoutForm(forms.Form):
 	payment_method = forms.ChoiceField(choices=PAYMENT_METHODS)
 	

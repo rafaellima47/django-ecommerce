@@ -40,7 +40,6 @@ class AccountsSignupView(CreateView):
 		email = EmailMessage("Account Activation",template,settings.EMAIL_HOST_USER,[user.email])
 		email.send()
 		
-	
 	def get(self, request, *args, **kwargs):
 		'''	
 		If user is authenticated redirect to LOGIN_REDIRECT_URL
@@ -49,7 +48,6 @@ class AccountsSignupView(CreateView):
 			return HttpResponseRedirect(self.get_success_url())
 		return super(AccountsSignupView, self).get(request, *args, **kwargs)
 	
-
 	def form_valid(self, form):
 		'''
 		If the user creation is successful, login the new user and redirects to homepage
@@ -64,7 +62,6 @@ class AccountsSignupView(CreateView):
 		except:
 			pass 
 		return valid
-
 
 
 def activate(request, uidb64, token):
@@ -83,7 +80,6 @@ def activate(request, uidb64, token):
 	return HttpResponseRedirect(reverse("login"))
 
 
-
 class AccountsLoginView(LoginView):
 	template_name = "accounts/login.html"
 	form_class = AccountsLoginForm
@@ -99,35 +95,28 @@ class AccountsLoginView(LoginView):
 		return HttpResponseRedirect(self.get_success_url())
 
 
-
 class AccountsLogoutView(LogoutView):
 	pass
-
 
 
 class AccountsPasswordChangeView(PasswordChangeView):
 	pass
 
 
-
 class AccountsPasswordChangeDoneView(PasswordChangeDoneView):
 	pass
-
 
 
 class AccountsPasswordResetView(PasswordResetView):
 	pass
 
 
-
 class AccountsPasswordResetConfirmView(PasswordResetConfirmView):
 	pass
 
 
-
 class AccountsPasswordResetDoneView(PasswordResetDoneView):
 	pass
-
 
 
 class AccountsPasswordResetCompleteView(PasswordResetCompleteView):

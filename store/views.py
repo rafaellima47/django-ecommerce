@@ -19,11 +19,9 @@ class HomeView(ListView):
 	queryset = Product.objects.all()
 
 
-
 class ProductDetailView(DetailView):
 	template_name = "store/product_detail.html"
 	model = Product
-
 
 
 class CartView(ListView):
@@ -39,7 +37,6 @@ class CartView(ListView):
 		return context
 
 
-
 class CheckoutView(LoginRequiredMixin, FormView):
 	template_name = "store/checkout.html"
 	form_class = CheckoutForm
@@ -51,7 +48,6 @@ class CheckoutView(LoginRequiredMixin, FormView):
 		return kwargs
 
 
-
 class ShippingInformationView(LoginRequiredMixin, FormView):
 	template_name = "store/shipping_info.html"
 	form_class = ShippingInformationForm
@@ -61,7 +57,6 @@ class ShippingInformationView(LoginRequiredMixin, FormView):
 		shipping_info.customer = self.request.user 
 		shipping_info.save()
 		return HttpResponseRedirect(reverse("checkout"))
-
 
 
 class StripeCheckoutView(LoginRequiredMixin, View):
@@ -91,10 +86,8 @@ class StripeCheckoutView(LoginRequiredMixin, View):
 		return HttpResponseRedirect(checkout_session.url)
 
 
-
 class AccountPageView(LoginRequiredMixin ,TemplateView):
 	template_name = "store/account.html"
-
 
 
 class SearchView(ListView):
@@ -145,7 +138,6 @@ class SearchView(ListView):
 		return context
 
 
-
 @login_required
 def update_wishlist(request, pk):
 	customer = request.user
@@ -161,7 +153,6 @@ def update_wishlist(request, pk):
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 
-
 @require_POST
 def cart_add(request, pk):
 	quantity = 1
@@ -174,7 +165,6 @@ def cart_add(request, pk):
 	cart = Cart(request)
 	cart.add(pk, quantity, override_quantity)
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
 
 
 @require_POST

@@ -11,13 +11,11 @@ class Base(models.Model):
 		abstract = True
 
 
-
 class Category(Base):
 	title = models.CharField(max_length=200)
 
 	def __str__(self):
 		return self.title
-
 
 
 class Product(Base):
@@ -31,14 +29,12 @@ class Product(Base):
 		return self.title
 
 
-
 class ProductImage(Base):
 	product = models.ForeignKey(Product, on_delete=models.CASCADE)
 	image = models.ImageField(upload_to="images/", default=None)
 
 	def __str__(self):
 		return str(self.id)
-
 
 
 class ShippingInformation(Base):
@@ -53,7 +49,6 @@ class ShippingInformation(Base):
 		return self.address
 
 
-
 class Order(Base):
 	customer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 	shipping_info = models.ForeignKey(ShippingInformation, on_delete=models.CASCADE)
@@ -63,7 +58,6 @@ class Order(Base):
 		return str(self.id)
 
 
-
 class OrderItem(Base):
 	order = models.ForeignKey(Order, on_delete=models.CASCADE)
 	product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -71,7 +65,6 @@ class OrderItem(Base):
 
 	def __str__(self):
 		return self.product
-
 
 
 class Review(Base):
@@ -85,7 +78,6 @@ class Review(Base):
 
 	class Meta:
 		unique_together = ["customer", "product"]
-
 
 
 class WishlistItem(Base):
