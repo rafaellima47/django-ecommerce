@@ -1,5 +1,8 @@
 from django import forms
-from .models import ShippingInformation
+
+from captcha.fields import ReCaptchaField
+
+from .models import ShippingInformation, Review
 
 
 PAYMENT_METHODS = (
@@ -24,3 +27,13 @@ class CheckoutForm(forms.Form):
 		super(CheckoutForm, self).__init__(*args, **kwargs)
 		self.fields["shipping_info"] = forms.ChoiceField(choices=enumerate(shipping_info))
 		
+
+class ProductReviewForm(forms.ModelForm):
+	captcha = ReCaptchaField(required=True)
+
+	class Meta:
+		model = Review
+		exclude = ["customer", "product"]
+		widgets = {
+			"rate": forms.NumberInput(attrs={"max": 5, "min": 0})
+		}

@@ -1,17 +1,18 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, TemplateView, FormView, View, RedirectView
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.urls import reverse, reverse_lazy
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import ListView, DetailView, TemplateView, FormView, View, RedirectView, CreateView
 
 import stripe
 
-from .models import Product, Category, WishlistItem
+from .models import Product, Category, WishlistItem, Order, OrderItem, ShippingInformation, Review
 from .cart import Cart
-from .forms import ShippingInformationForm, CheckoutForm
+from .forms import ShippingInformationForm, CheckoutForm, ProductReviewForm
 
 
 class HomeView(ListView):
@@ -22,6 +23,41 @@ class HomeView(ListView):
 class ProductDetailView(DetailView):
 	template_name = "store/product_detail.html"
 	model = Product
+
+	def update_avg_rate(self):
+		product = self.get_object()
+		avg = 0
+		rates = Review.objects.filter(product=product).values("rate")
+		for value in rates:
+			avg += value["rate"]
+		if avg == 0:
+			return avg
+		return avg/len(rates)
+
+	def get_context_data(self, **kwargs):
+		context = super(ProductDetailView, self).get_context_data(**kwargs)
+		item = self.get_object()
+		if self.request.user.is_authenticated:
+			if not self.get_object().review_set.filter(customer=self.request.user):
+				orders = Order.objects.filter(customer=self.request.user)
+				for order in orders:
+					for orderitem in order.orderitem_set.all():
+						if item == orderitem.product:
+							context["review_form"] = ProductReviewForm
+							break 
+		return context
+
+	def post(self, request, *args, **kwargs):
+		product = self.get_object()
+		form = ProductReviewForm(request.POST)
+		if form.is_valid:
+			review = form.save(commit=False)
+			review.customer = request.user 
+			review.product = self.get_object()
+			review.save()
+			product.rate = self.update_avg_rate()
+			product.save()
+		return self.get(request)
 
 
 class CartView(ListView):
@@ -79,11 +115,18 @@ class StripeCheckoutView(LoginRequiredMixin, View):
 			payment_method_types=["card"],
 			mode="payment",
 			line_items=line_items,
-			success_url=f"http://localhost:8000",
-			cancel_url=f"http://localhost:8000",
+			success_url=f"http://localhost:8000/stripe_checkout_webhook/",
+			cancel_url=f"http://localhost:8000/",
 			)
 		
 		return HttpResponseRedirect(checkout_session.url)
+
+
+class OrdersHistory(ListView):
+	template_name = "store/history.html"
+
+	def get_queryset(self):
+		return Order.objects.filter(customer=self.request.user)
 
 
 class AccountPageView(LoginRequiredMixin ,TemplateView):
@@ -172,3 +215,20 @@ def cart_delete(request, pk):
 	cart = Cart(request)
 	cart.delete(pk)
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def stripe_checkout_webhook(request):
+	shipping_info = ShippingInformation.objects.filter(customer=request.user)[0]
+	order = Order(customer=request.user, shipping_info=shipping_info)
+	order.save()
+	cart = request.session.get("cart")
+		
+	for item in cart:
+		product = Product.objects.get(pk=item)
+		OrderItem.objects.create(
+				order=order, 
+				product=product, 
+				quantity=cart[item]["quantity"]
+			)
+	Cart(request).clear()
+	return HttpResponseRedirect(reverse("home"))

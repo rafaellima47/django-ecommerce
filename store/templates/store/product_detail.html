@@ -17,6 +17,14 @@
 	</form>
 	<a href="{% url 'update_wishlist' object.id %}">Add to Wishlist</a>
 
+	{% if review_form %}
+	<form action="{% url 'product_detail' pk=object.id %}" method="POST">
+		{% csrf_token %}
+		{{review_form}}
+		<input type="submit" name="">
+	</form>
+	{% endif %}
+
 	{% for review in object.review_set.all %}
 	<br><br>
 		<p>{{review.customer}}</p>

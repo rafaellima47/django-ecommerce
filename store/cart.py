@@ -5,7 +5,6 @@ class Cart(object):
 
 	def __init__(self, request):
 		if not request.session.get("cart"):
-			print("created cart")
 			request.session["cart"] = {}
 
 		self.session = request.session
@@ -30,12 +29,16 @@ class Cart(object):
 
 		self.session.modified = True
 
-	def delete(self, product_id):
+	def delete(self, product_id=None, clear=False):
 		product_id = str(product_id)
-
 		if product_id in self.cart:
 			del self.cart[product_id]
 			self.session.modified = True
+
+	def clear(self):
+		print("CLEAAAR")
+		del self.session["cart"]
+		self.session.modified = True
 
 	@property
 	def get_total(self):

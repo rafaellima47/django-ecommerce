@@ -24,6 +24,7 @@ class Product(Base):
 	price = models.FloatField()
 	is_digital = models.BooleanField(default=False)
 	category = models.ManyToManyField(Category)
+	rate = models.DecimalField(max_digits=2, decimal_places=1, blank=True, null=True)
 
 	def __str__(self):
 		return self.title
@@ -64,7 +65,7 @@ class OrderItem(Base):
 	quantity = models.PositiveIntegerField(default=0)
 
 	def __str__(self):
-		return self.product
+		return str(self.product)
 
 
 class Review(Base):

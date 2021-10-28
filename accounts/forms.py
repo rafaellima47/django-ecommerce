@@ -2,10 +2,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
 from django import forms
 from django.conf import settings
-try:
-	from captcha.fields import ReCaptchaField
-except:
-	pass 
+
+from captcha.fields import ReCaptchaField 
 
 
 class AccountsSignupForm(UserCreationForm):
